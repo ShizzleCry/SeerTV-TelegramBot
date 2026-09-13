@@ -1,5 +1,6 @@
 import logging
 import os
+from urllib.parse import quote, urlencode
 
 import requests
 from dotenv import load_dotenv
@@ -83,10 +84,15 @@ async def search_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     msg = await update.message.reply_text(f"Searching for \"{query}\"...")
 
     try:
+        # Overseerr's validation rejects "+" for spaces (requests' default
+        # form-style encoding); force %20 via quote_via=quote instead.
+        query_string = urlencode(
+            {"query": query, "page": 1, "language": "en"},
+            quote_via=quote,
+        )
         resp = requests.get(
-            f"{OVERSEERR_URL}/api/v1/search",
+            f"{OVERSEERR_URL}/api/v1/search?{query_string}",
             headers=HEADERS,
-            params={"query": query, "page": 1, "language": "en"},
             timeout=15,
         )
         resp.raise_for_status()
