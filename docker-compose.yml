@@ -1,0 +1,17 @@
+services:
+  overseerr-telegram-bot:
+    build: .
+    container_name: overseerr-telegram-bot
+    restart: unless-stopped
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      OVERSEERR_URL: ${OVERSEERR_URL}
+      OVERSEERR_API_KEY: ${OVERSEERR_API_KEY}
+      ALLOWED_USER_IDS: ${ALLOWED_USER_IDS}
+    # No ports exposed - the bot only makes outbound connections (Telegram polling).
+    networks:
+      - overseerr-bot-net
+
+networks:
+  overseerr-bot-net:
+    driver: bridge
