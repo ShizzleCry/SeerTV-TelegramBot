@@ -8,10 +8,25 @@ services:
       OVERSEERR_URL: ${OVERSEERR_URL}
       OVERSEERR_API_KEY: ${OVERSEERR_API_KEY}
       ALLOWED_USER_IDS: ${ALLOWED_USER_IDS}
-    # No ports exposed - the bot only makes outbound connections (Telegram polling).
+      ADMIN_USER_IDS: ${ADMIN_USER_IDS}
+      WEBHOOK_PORT: 5091
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      SONARR_URL: ${SONARR_URL}
+      SONARR_API_KEY: ${SONARR_API_KEY}
+      DATA_DIR: /app/data
+    # Only port 5091 is published, and only reachable on your LAN (no router
+    # forwarding configured) - this is what lets Overseerr call the webhook.
+    # Telegram itself still only needs outbound polling, no port required for that.
+    ports:
+      - "5091:5091"
+    volumes:
+      - bot-data:/app/data
     networks:
       - overseerr-bot-net
 
 networks:
   overseerr-bot-net:
     driver: bridge
+
+volumes:
+  bot-data:
